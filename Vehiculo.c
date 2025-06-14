@@ -11,7 +11,7 @@ void limpiarPantalla() {
 #ifdef _WIN32
 	system("cls"); // Para Windows
 #else
-	system("clear"); // Para sistemas Unix/Linux/macOS
+	system("clear");
 #endif
 }
 
@@ -71,72 +71,12 @@ void limpiarBuffer() {
 	while ((c = getchar()) != '\n' && c != EOF);
 }
 
-void backupDatos() {
-	FILE *archivoOriginal = fopen(ARCHIVO_DATOS, "r");
-	if (archivoOriginal == NULL) {
-		printf("No se encontro el archivo original para hacer backup.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
-		return;
-	}
-	
-	FILE *archivoBackup = fopen("backup_vehiculos.txt", "w");
-	if (archivoBackup == NULL) {
-		printf("Error al crear el archivo de backup.\n");
-		fclose(archivoOriginal);
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
-		return;
-	}
-	
-	char linea[256];
-	while (fgets(linea, sizeof(linea), archivoOriginal)) {
-		fputs(linea, archivoBackup);
-	}
-	
-	fclose(archivoOriginal);
-	fclose(archivoBackup);
-	
-	printf("Backup creado exitosamente en 'backup_vehiculos.txt'.\n");
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
-}
-
-void cargarDatos() {
-	FILE *archivo = fopen(ARCHIVO_DATOS, "r");
-	if (archivo == NULL) {
-		printf("No hay datos previos.\n");
-		return; // No se pide Enter aquí porque main.c llama limpiarPantalla() inmediatamente.
-	}
-	
-	cantidadVehiculos = 0;
-	while (fscanf(archivo, "%s %s %d %s %f %d %d %d",
-				  vehiculos[cantidadVehiculos].placa,
-				  vehiculos[cantidadVehiculos].cedula,
-				  &vehiculos[cantidadVehiculos].anio,
-				  vehiculos[cantidadVehiculos].tipo,
-				  &vehiculos[cantidadVehiculos].avaluo,
-				  &vehiculos[cantidadVehiculos].revisiones[0],
-				  &vehiculos[cantidadVehiculos].revisiones[1],
-				  &vehiculos[cantidadVehiculos].revisiones[2]) == 8) {
-		cantidadVehiculos++;
-		if (cantidadVehiculos >= MAX_VEHICULOS) {
-			printf("Advertencia: Se alcanzo el limite de vehiculos al cargar datos.\n");
-			break;
-		}
-	}
-	
-	fclose(archivo);
-	printf("Datos cargados correctamente.\n");
-	// No se pide Enter aquí porque main.c llama limpiarPantalla() inmediatamente después de cargar.
-}
-
 void guardarDatos() {
 	FILE *archivo = fopen(ARCHIVO_DATOS, "w");
 	if (archivo == NULL) {
 		printf("Error al guardar los datos.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -154,89 +94,123 @@ void guardarDatos() {
 	
 	fclose(archivo);
 	printf("Datos guardados exitosamente.\n");
-	// No se pide Enter aquí porque main.c ya lo maneja antes de salir.
 }
 
 void registrarVehiculo() {
 	if (cantidadVehiculos >= MAX_VEHICULOS) {
+		limpiarPantalla(); // Limpiar si no se puede registrar más
 		printf("No se pueden registrar mas vehiculos.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
 	Vehiculo nuevo;
-	char inputBuffer[50]; // Buffer temporal
+	char inputBuffer[50];
 	
 	// Validación de Placa
 	do {
+		limpiarPantalla(); // Limpiar pantalla para cada intento
+		printf("--- Registrar Vehiculo ---\n"); // Título para contexto
 		printf("Ingrese la placa (Ej: ABC1234): ");
 		scanf("%s", nuevo.placa);
 		limpiarBuffer();
-		// Mayusculas o minusculas
 		for (int i = 0; nuevo.placa[i]; i++) {
 			nuevo.placa[i] = toupper(nuevo.placa[i]);
 		}
 		if (!validarPlaca(nuevo.placa)) {
 			printf("Error: Formato de placa invalido. Debe ser 3 letras y 4 digitos (Ej: ABC1234).\n");
+			printf("Presione Enter para reintentar...");
+			limpiarBuffer();
+			continue; // Volver a pedir la placa
 		} else {
-			// Verificacion de existencia
 			bool placaExistente = false;
 			for (int i = 0; i < cantidadVehiculos; i++) {
 				if (strcmp(vehiculos[i].placa, nuevo.placa) == 0) {
 					printf("Error: Ya existe un vehiculo con esa placa.\n");
+					printf("Presione Enter para reintentar...");
+					limpiarBuffer();
 					placaExistente = true;
 					break;
 				}
 			}
 			if (placaExistente) {
-				continue;
+				continue; // Volver a pedir la placa
 			}
 		}
-	} while (!validarPlaca(nuevo.placa));
+		break; // Si la placa es válida y no existe, salir del bucle
+	} while (true);
 	
 	// Validación de Cédula
 	do {
+		limpiarPantalla(); // Limpiar pantalla para cada intento
+		printf("--- Registrar Vehiculo ---\n"); // Título para contexto
+		// Eliminado: printf("Placa: %s\n", nuevo.placa); // Ya no se muestra la placa previamente ingresada
 		printf("Ingrese la cedula del propietario (min. 10 digitos): ");
 		scanf("%s", nuevo.cedula);
 		limpiarBuffer();
 		if (!validarCedula(nuevo.cedula)) {
 			printf("Error: Formato de cedula invalido. Debe contener solo digitos y al menos 10.\n");
+			printf("Presione Enter para reintentar...");
+			limpiarBuffer();
+		} else {
+			break; // Si la cédula es válida, salir del bucle
 		}
-	} while (!validarCedula(nuevo.cedula));
+	} while (true);
 	
 	// Validación de Año
 	do {
+		limpiarPantalla(); // Limpiar pantalla para cada intento
+		printf("--- Registrar Vehiculo ---\n"); // Título para contexto
+		// Eliminado: printf("Placa: %s, Cedula: %s\n", nuevo.placa, nuevo.cedula); // Ya no se muestran datos previos
 		printf("Ingrese el anio del vehiculo (ej. 2020): ");
-		fgets(inputBuffer, sizeof(inputBuffer), stdin); //fgets para leer
-		inputBuffer[strcspn(inputBuffer, "\n")] = 0; // Eliminar el salto de línea
+		fgets(inputBuffer, sizeof(inputBuffer), stdin);
+		inputBuffer[strcspn(inputBuffer, "\n")] = 0;
 		
 		if (sscanf(inputBuffer, "%d", &nuevo.anio) != 1 || !validarAnio(nuevo.anio)) {
-			printf("Error: Anio invalido. Por favor ingrese un numero valido (1900-2026).\n"); // Corregido el mensaje
+			printf("Error: Anio invalido. Por favor ingrese un numero valido (1900-2026).\n");
+			printf("Presione Enter para reintentar...");
+			limpiarBuffer();
+		} else {
+			break;
 		}
-	} while (!validarAnio(nuevo.anio));
+	} while (true);
 	
 	// Validación de Tipo
 	do {
+		limpiarPantalla(); // Limpiar pantalla para cada intento
+		printf("--- Registrar Vehiculo ---\n"); // Título para contexto
+		// Eliminado: printf("Placa: %s, Cedula: %s, Anio: %d\n", nuevo.placa, nuevo.cedula, nuevo.anio); // Ya no se muestran datos previos
 		printf("Ingrese el tipo de vehiculo (ej. Sedan, SUV): ");
 		fgets(nuevo.tipo, sizeof(nuevo.tipo), stdin);
 		nuevo.tipo[strcspn(nuevo.tipo, "\n")] = 0;
 		
 		if (!validarTipo(nuevo.tipo)) {
 			printf("Error: Tipo de vehiculo invalido. Solo letras y espacios permitidos y no puede estar vacio.\n");
+			printf("Presione Enter para reintentar...");
+			limpiarBuffer();
+		} else {
+			break;
 		}
-	} while (!validarTipo(nuevo.tipo));
+	} while (true);
 	
 	// Validación de Avalúo
 	do {
+		limpiarPantalla(); // Limpiar pantalla para cada intento
+		printf("--- Registrar Vehiculo ---\n"); // Título para contexto
+		// Eliminado: printf("Placa: %s, Cedula: %s, Anio: %d, Tipo: %s\n", nuevo.placa, nuevo.cedula, nuevo.anio, nuevo.tipo); // Ya no se muestran datos previos
 		printf("Ingrese el avaluo del vehiculo (valor positivo): ");
 		fgets(inputBuffer, sizeof(inputBuffer), stdin);
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0;
 		
 		if (sscanf(inputBuffer, "%f", &nuevo.avaluo) != 1 || !validarAvaluo(nuevo.avaluo)) {
 			printf("Error: Avaluo invalido. Por favor ingrese un valor numerico positivo.\n");
+			printf("Presione Enter para reintentar...");
+			limpiarBuffer();
+		} else {
+			break;
 		}
-	} while (!validarAvaluo(nuevo.avaluo));
+	} while (true);
 	
 	// Inicializar revisiones
 	for (int i = 0; i < 3; i++) {
@@ -244,16 +218,18 @@ void registrarVehiculo() {
 	}
 	
 	vehiculos[cantidadVehiculos++] = nuevo;
+	limpiarPantalla(); // Limpiar pantalla final antes del mensaje de éxito
 	printf("Vehiculo registrado exitosamente.\n");
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void calcularValorMatricula() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -262,7 +238,7 @@ void calcularValorMatricula() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
 			float valorMatricula = vehiculos[i].avaluo * 0.015f;
@@ -275,15 +251,16 @@ void calcularValorMatricula() {
 	if (!encontrado) {
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void ordenarVehiculos() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos <= 1) {
 		printf("No hay suficientes vehiculos para ordenar.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -298,15 +275,16 @@ void ordenarVehiculos() {
 	}
 	
 	printf("Vehiculos ordenados por placa exitosamente.\n");
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void registrarRevision() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	// Buscar placa
@@ -315,45 +293,51 @@ void registrarRevision() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
 			int numRevision;
-			char inputBuffer[10]; // Temporal buffer for scanf
+			char inputBuffer[10];
 			
 			do {
+				limpiarPantalla(); // Limpiar pantalla para cada intento de revisión
+				printf("--- Registrar Revision Tecnica ---\n"); // Título para contexto
+				printf("Placa: %s\n", vehiculos[i].placa); // Mostrar placa del vehículo
 				printf("Ingrese el numero de revision (1-3): ");
 				fgets(inputBuffer, sizeof(inputBuffer), stdin);
 				inputBuffer[strcspn(inputBuffer, "\n")] = 0;
 				
 				if (sscanf(inputBuffer, "%d", &numRevision) != 1 || numRevision < 1 || numRevision > 3) {
 					printf("Error: Numero de revision invalido. Debe ser 1, 2 o 3. Reintente.\n");
+					printf("Presione Enter para reintentar...");
+					limpiarBuffer();
 				} else {
 					vehiculos[i].revisiones[numRevision - 1] = 1;
 					printf("Revision %d registrada correctamente como aprobada.\n", numRevision);
 					encontrado = true;
 					break;
 				}
-			} while (true); // Loop until valid input
+			} while (true);
 			
-			if (encontrado) break; // Exit loop if found and processed
+			if (encontrado) break;
 		}
 	}
 	
 	if (!encontrado) {
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 // Comprobante
 
 void generarComprobante() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -362,11 +346,12 @@ void generarComprobante() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
 			float valorMatricula = vehiculos[i].avaluo * 0.015f;
 			
+			limpiarPantalla(); // Limpiar antes de mostrar el comprobante
 			printf("\n========================================\n");
 			printf("        COMPROBANTE DE MATRICULA        \n");
 			printf("========================================\n");
@@ -390,17 +375,19 @@ void generarComprobante() {
 	}
 	
 	if (!encontrado) {
+		limpiarPantalla(); // Limpiar si no se encontró antes de mostrar el mensaje
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void exportarComprobante() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -409,7 +396,7 @@ void exportarComprobante() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
 			char nombreArchivo[30];
@@ -418,8 +405,8 @@ void exportarComprobante() {
 			FILE *archivo = fopen(nombreArchivo, "w");
 			if (archivo == NULL) {
 				printf("Error al crear el archivo de comprobante.\n");
-				printf("Presione Enter para continuar..."); // Añadido
-				limpiarBuffer(); // Añadido
+				printf("Presione Enter para continuar...");
+				limpiarBuffer();
 				return;
 			}
 			
@@ -452,15 +439,16 @@ void exportarComprobante() {
 	if (!encontrado) {
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void buscarVehiculo() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -469,9 +457,10 @@ void buscarVehiculo() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
+			limpiarPantalla(); // Limpiar antes de mostrar los datos del vehículo
 			printf("\n--- Datos del Vehiculo ---\n");
 			printf("Placa       : %s\n", vehiculos[i].placa);
 			printf("Cedula      : %s\n", vehiculos[i].cedula);
@@ -490,17 +479,19 @@ void buscarVehiculo() {
 	}
 	
 	if (!encontrado) {
+		limpiarPantalla(); // Limpiar si no se encontró antes de mostrar el mensaje
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void listarVehiculos() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -510,42 +501,16 @@ void listarVehiculos() {
 			   vehiculos[i].placa, vehiculos[i].cedula, vehiculos[i].anio, vehiculos[i].tipo, vehiculos[i].avaluo);
 	}
 	printf("-----------------------------\n");
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
-}
-
-void estadisticasVehiculares() {
-	if (cantidadVehiculos == 0) {
-		printf("No hay vehiculos registrados.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
-		return;
-	}
-	
-	int totalVehiculos = cantidadVehiculos;
-	int revisionesAprobadas = 0;
-	
-	for (int i = 0; i < cantidadVehiculos; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (vehiculos[i].revisiones[j] == 1) {
-				revisionesAprobadas++;
-			}
-		}
-	}
-	
-	printf("\n--- Estadisticas Vehiculares ---\n");
-	printf("Total de vehiculos registrados: %d\n", totalVehiculos);
-	printf("Total de revisiones aprobadas: %d\n", revisionesAprobadas);
-	printf("---------------------------------\n");
-	printf("Presione Enter para continuar..."); // Añadido
-	limpiarBuffer(); // Añadido
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void editarVehiculo() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados para editar.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -554,10 +519,11 @@ void editarVehiculo() {
 	scanf("%s", placaBuscar);
 	limpiarBuffer();
 	
-	bool encontrado = false; // Añadido para manejar el mensaje de "No encontrado"
+	bool encontrado = false;
 	for (int i = 0; i < cantidadVehiculos; i++) {
 		if (strcmp(vehiculos[i].placa, placaBuscar) == 0) {
-			printf("\n--- Editando Vehiculo ---\n");
+			encontrado = true;
+			printf("\n--- Editando Vehiculo (Placa: %s) ---\n", vehiculos[i].placa); // Mostrar placa para contexto
 			printf("Deje en blanco si no desea modificar un campo (presione Enter).\n");
 			
 			char input[50];
@@ -570,17 +536,19 @@ void editarVehiculo() {
 				fgets(input, sizeof(input), stdin);
 				input[strcspn(input, "\n")] = 0;
 				
-				if (strlen(input) > 0) { // Si el usuario ingresó algo
+				if (strlen(input) > 0) {
 					if (!validarCedula(input)) {
+						limpiarPantalla(); // Limpiar si hay error
 						printf("Error: Formato de cedula invalido. Debe contener solo digitos y al menos 10. Reintente.\n");
+						printf("Cedula actual: %s\nNueva cedula (o Enter para mantener): ", vehiculos[i].cedula); // Volver a mostrar prompt
 					} else {
 						strcpy(vehiculos[i].cedula, input);
-						break; // Salir del bucle (válida)
+						break;
 					}
-				} else { // Mantener el valor actual
+				} else {
 					break;
 				}
-			} while (true); // Repetir (Igual o blanco)
+			} while (true);
 			
 			
 			// Edicion año
@@ -594,7 +562,9 @@ void editarVehiculo() {
 						vehiculos[i].anio = anioTemp;
 						break;
 					} else {
-						printf("Error: Anio invalido. Por favor ingrese un numero valido (1900-2026). Reintente.\n"); // Corregido mensaje
+						limpiarPantalla(); // Limpiar si hay error
+						printf("Error: Anio invalido. Por favor ingrese un numero valido (1900-2026). Reintente.\n");
+						printf("Anio actual: %d\nNuevo anio (o Enter para mantener): ", vehiculos[i].anio); // Volver a mostrar prompt
 					}
 				} else {
 					break;
@@ -612,7 +582,9 @@ void editarVehiculo() {
 						strcpy(vehiculos[i].tipo, input);
 						break;
 					} else {
+						limpiarPantalla(); // Limpiar si hay error
 						printf("Error: Tipo de vehiculo invalido. Solo letras y espacios permitidos y no puede estar vacio. Reintente.\n");
+						printf("Tipo actual: %s\nNuevo tipo (o Enter para mantener): ", vehiculos[i].tipo); // Volver a mostrar prompt
 					}
 				} else {
 					break;
@@ -630,31 +602,35 @@ void editarVehiculo() {
 						vehiculos[i].avaluo = avaluoTemp;
 						break;
 					} else {
+						limpiarPantalla(); // Limpiar si hay error
 						printf("Error: Avaluo invalido. Por favor ingrese un valor numerico positivo. Reintente.\n");
+						printf("Avaluo actual: %.2f\nNuevo avaluo (o Enter para mantener): ", vehiculos[i].avaluo); // Volver a mostrar prompt
 					}
 				} else {
 					break;
 				}
 			} while (true);
 			
+			limpiarPantalla(); // Limpiar antes del mensaje de éxito
 			printf("Datos actualizados correctamente.\n");
-			encontrado = true;
-			break;
+			break; // Salir del bucle for principal de búsqueda
 		}
 	}
 	
 	if (!encontrado) {
+		limpiarPantalla(); // Limpiar si no se encontró
 		printf("Vehiculo no encontrado.\n");
 	}
-	printf("Presione Enter para continuar..."); 
-	limpiarBuffer(); 
+	printf("Presione Enter para continuar...");
+	limpiarBuffer();
 }
 
 void eliminarVehiculo() {
+	limpiarPantalla(); // Limpiar al entrar a la función
 	if (cantidadVehiculos == 0) {
 		printf("No hay vehiculos registrados para eliminar.\n");
-		printf("Presione Enter para continuar..."); 
-		limpiarBuffer(); 
+		printf("Presione Enter para continuar...");
+		limpiarBuffer();
 		return;
 	}
 	
@@ -677,19 +653,33 @@ void eliminarVehiculo() {
 		inputBuffer[strcspn(inputBuffer, "\n")] = 0;
 		
 		if (sscanf(inputBuffer, "%d", &indice) != 1 || indice < 1 || indice > cantidadVehiculos) {
+			limpiarPantalla(); // Limpiar si hay error
 			printf("Error: Indice invalido. Por favor, ingrese un numero de vehiculo valido.\n");
+			// Vuelve a mostrar la lista para que el usuario pueda ver los números de nuevo
+			printf("\n--- Lista de Vehiculos Registrados ---\n");
+			for (int i = 0; i < cantidadVehiculos; i++) {
+				printf("%d. Placa: %-10s Tipo: %-10s Anio: %-4d Avaluo: $%.2f\n",
+					   i + 1,
+					   vehiculos[i].placa,
+					   vehiculos[i].tipo,
+					   vehiculos[i].anio,
+					   vehiculos[i].avaluo);
+			}
 		} else {
-			break; 
+			break;
 		}
 	} while (true);
 	
 	indice--;
 	
+	// Antes de confirmar, limpiar para tener un entorno limpio para la pregunta de confirmación
+	limpiarPantalla(); 
 	printf("Esta seguro que desea eliminar el vehiculo con placa %s? (s/n): ", vehiculos[indice].placa);
 	char confirmacion;
 	scanf(" %c", &confirmacion);
 	limpiarBuffer();
 	
+	limpiarPantalla(); // Limpiar antes de mostrar el resultado de la eliminación
 	if (confirmacion == 's' || confirmacion == 'S') {
 		for (int i = indice; i < cantidadVehiculos - 1; i++) {
 			vehiculos[i] = vehiculos[i + 1];
@@ -700,5 +690,5 @@ void eliminarVehiculo() {
 		printf("Eliminacion cancelada.\n");
 	}
 	printf("Presione Enter para continuar...");
-	limpiarBuffer(); 
+	limpiarBuffer();
 }

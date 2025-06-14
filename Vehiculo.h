@@ -24,8 +24,6 @@ extern int cantidadVehiculos;
 // Prototipos de funciones
 void limpiarBuffer();
 void limpiarPantalla();
-void backupDatos();
-void cargarDatos();
 void guardarDatos();
 void registrarVehiculo();
 void calcularValorMatricula();
@@ -35,7 +33,6 @@ void generarComprobante();
 void exportarComprobante();
 void buscarVehiculo();
 void listarVehiculos();
-void estadisticasVehiculares();
 void editarVehiculo();
 void eliminarVehiculo();
 

@@ -1,57 +1,82 @@
 #include "vehiculo.h"
 #include <stdio.h>
 
+// Prototipo de la nueva función para el submenú de gestión de vehículos
+void gestionarVehiculos(); 
+
 int main() {
 	int opcion;
-	cargarDatos(); // Carga datos (Si hay)
-	limpiarPantalla();
-	
 	do {
-		printf("\n--- Sistema Integral de Matriculacion Vehicular ---\n");
+		printf("--- Sistema Integral de Matriculacion Vehicular ---\n");
+		printf("1. Gestionar Vehiculos\n"); // Nueva opción para el submenú
+		printf("2. Calcular Matricula\n");
+		printf("3. Generar Comprobante\n");
+		printf("4. Exportar Comprobante a archivo\n");
+		printf("5. Ordenar Vehiculos (por placa)\n"); // Renumerada de 6 a 5
+		printf("6. Guardar y Salir\n"); // Renumerada de 7 a 6
+		printf("Seleccione una opcion: ");
+		scanf("%d", &opcion);
+		limpiarBuffer();
+		limpiarPantalla();
+		if (opcion != 6) { 
+		}
+		
+		switch (opcion) {
+		case 1: gestionarVehiculos(); limpiarPantalla(); break; // Llama al nuevo submenú, luego limpia al volver.
+		case 2: calcularValorMatricula(); break;
+		case 3: generarComprobante(); break;
+		case 4: exportarComprobante(); break;
+		case 5: ordenarVehiculos(); break; 
+		case 6: guardarDatos(); printf("Datos guardados. Saliendo...\n"); break; 
+		default: 
+			limpiarPantalla(); // Limpiar si la opción es inválida
+			printf("Opcion invalida. Intente de nuevo.\n");
+			printf("Presione Enter para continuar...");
+			limpiarBuffer();
+			limpiarPantalla(); // Limpiar después de que el usuario lea el error
+			break;
+		}
+		
+	} while (opcion != 6); // El bucle principal termina cuando se selecciona la nueva opción de salir (6)
+	
+	return 0;
+}
+
+// Implementación de la nueva función para el submenú de gestión de vehículos
+void gestionarVehiculos() {
+	int subOpcion;
+	do {
+		printf("--- Submenu de Gestion de Vehiculos ---\n");
 		printf("1. Registrar Vehiculo\n");
 		printf("2. Editar Vehiculo\n");
 		printf("3. Eliminar Vehiculo\n");
 		printf("4. Buscar Vehiculo\n");
 		printf("5. Listar Vehiculos\n");
 		printf("6. Registrar Revision Tecnica\n");
-		printf("7. Calcular Matricula\n");
-		printf("8. Generar Comprobante\n");
-		printf("9. Exportar Comprobante a archivo\n");
-		printf("10. Ver Estadisticas\n");
-		printf("11. Ordenar Vehiculos (por placa)\n");
-		printf("12. Backup de Datos\n");
-		printf("13. Guardar y Salir\n");
+		printf("7. Volver al Menu Principal\n"); // Opción para salir del submenú
 		printf("Seleccione una opcion: ");
-		scanf("%d", &opcion);
+		scanf("%d", &subOpcion);
 		limpiarBuffer();
 		
-	
-		// Limpiar excepto "Salir"
-		if (opcion != 13) {
-			limpiarPantalla();
+		if (subOpcion != 7) { 
+			// No limpiar pantalla inmediatamente si la opción es 7, o si es inválida
 		}
 		
-		switch (opcion) {
-		case 1: registrarVehiculo(); break;
-		case 2: editarVehiculo(); break;
-		case 3: eliminarVehiculo(); break;
-		case 4: buscarVehiculo(); break;
-		case 5: listarVehiculos(); break;
-		case 6: registrarRevision(); break;
-		case 7: calcularValorMatricula(); break;
-		case 8: generarComprobante(); break;
-		case 9: exportarComprobante(); break;
-		case 10: estadisticasVehiculares(); break;
-		case 11: ordenarVehiculos(); break;
-		case 12: backupDatos(); break;
-		case 13: guardarDatos(); printf("Datos guardados. Saliendo...\n"); break;
-		default: printf("Opcion invalida. Intente de nuevo.\n");
-		printf("Presione Enter para continuar..."); // Añadido
-		limpiarBuffer(); // Añadido
-		break;
+		switch (subOpcion) {
+		case 1: registrarVehiculo(); limpiarPantalla(); break;
+		case 2: editarVehiculo(); limpiarPantalla(); break;
+		case 3: eliminarVehiculo(); limpiarPantalla(); break;
+		case 4: buscarVehiculo(); limpiarPantalla(); break;
+		case 5: listarVehiculos(); limpiarPantalla(); break;
+		case 6: registrarRevision(); limpiarPantalla(); break;
+		case 7: printf("Volviendo al menu principal...\n"); break;
+		default: 
+			limpiarPantalla(); // Limpiar si la opción es inválida
+			printf("Opcion invalida. Intente de nuevo.\n");
+			printf("Presione Enter para continuar...");
+			limpiarBuffer();
+			limpiarPantalla(); // Limpiar después de que el usuario lea el error
+			break;
 		}
-		
-	} while (opcion != 13);
-	
-	return 0;
+	} while (subOpcion != 7);
 }
