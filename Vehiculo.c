@@ -111,7 +111,7 @@ void registrarVehiculo() {
 	do {
 		limpiarPantalla();
 		printf("--- Registrar Vehiculo ---\n");
-		printf("Ingrese la placa (Ej: ABC1234): ");
+		printf("Ingrese la placa (Ej: PDP7714): ");
 		scanf("%s", nuevo.placa);
 		limpiarBuffer();
 		for (int i = 0; nuevo.placa[i]; i++) {
