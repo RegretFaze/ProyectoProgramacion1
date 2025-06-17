@@ -42,7 +42,7 @@ int main() {
 	return 0;
 }
 
-//Implementación de la nueva función para el submenú de gestión de vehículos
+//Implementación Nueva función
 void gestionarVehiculos() {
 	int subOpcion;
 	do {
@@ -59,7 +59,7 @@ void gestionarVehiculos() {
 		limpiarBuffer();
 		
 		if (subOpcion != 7) { 
-			//No limpiar pantalla inmediatamente si la opción es 7, o si es inválida
+			//No limpiar pantalla inmediatamente
 		}
 		
 		switch (subOpcion) {
