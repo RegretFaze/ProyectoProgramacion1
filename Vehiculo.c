@@ -6,7 +6,7 @@
 Vehiculo vehiculos[MAX_VEHICULOS];
 int cantidadVehiculos = 0;
 
-// Fnción limpiar pantalla
+// Función limpiar pantalla
 void limpiarPantalla() {
 #ifdef _WIN32
 	system("cls"); // Para Windows
