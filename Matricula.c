@@ -1,7 +1,7 @@
 #include "vehiculo.h"
 #include <stdio.h>
 
-//Función submenú
+//Funcion submenu
 void gestionarVehiculos(); 
 
 int main() {
@@ -29,11 +29,11 @@ int main() {
 		case 5: ordenarVehiculos(); break; 
 		case 6: guardarDatos(); printf("Datos guardados. Saliendo...\n"); break; 
 		default: 
-			limpiarPantalla(); //Limpiar si la opción es inválida
+			limpiarPantalla(); //Limpiar si la opcion es inválida
 			printf("Opcion invalida. Intente de nuevo.\n");
 			printf("Presione Enter para continuar...");
 			limpiarBuffer();
-			limpiarPantalla(); //Limpiar después de que el usuario lea el error
+			limpiarPantalla(); //Limpiar despues de que el usuario lea el error
 			break;
 		}
 		
@@ -53,7 +53,7 @@ void gestionarVehiculos() {
 		printf("4. Buscar Vehiculo\n");
 		printf("5. Listar Vehiculos\n");
 		printf("6. Registrar Revision Tecnica\n");
-		printf("7. Volver al Menu Principal\n"); //Opción para salir del submenú
+		printf("7. Volver al Menu Principal\n"); //Opción para salir del submenu
 		printf("Seleccione una opcion: ");
 		scanf("%d", &subOpcion);
 		limpiarBuffer();
@@ -71,11 +71,11 @@ void gestionarVehiculos() {
 		case 6: registrarRevision(); limpiarPantalla(); break;
 		case 7: printf("Volviendo al menu principal...\n"); break;
 		default: 
-			limpiarPantalla(); //Limpiar si la opción es inválida
+			limpiarPantalla(); //Limpiar si la opcion es invalida
 			printf("Opcion invalida. Intente de nuevo.\n");
 			printf("Presione Enter para continuar...");
 			limpiarBuffer();
-			limpiarPantalla(); //Limpiar después de que el usuario lea el error
+			limpiarPantalla(); //Limpiar despues de que el usuario lea el error
 			break;
 		}
 	} while (subOpcion != 7);
