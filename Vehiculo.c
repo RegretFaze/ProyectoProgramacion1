@@ -33,7 +33,7 @@ bool validarPlaca(const char *placa) {
 // Cedula
 static bool validarCedula(const char *cedula) {
 	int len = strlen(cedula);
-	if (len < 10) return false;
+	if (len < 9) return false;
 	
 	for (int i = 0; i < len; i++) {
 		if (!isdigit(cedula[i])) return false;
