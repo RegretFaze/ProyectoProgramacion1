@@ -7,7 +7,7 @@
 #define MAX_VEHICULOS 100
 #define ARCHIVO_DATOS "vehiculos.txt"
 
-//Estructura para el vehÃ­culo
+//Estructura para el vehículo
 typedef struct {
 	char placa[10];
 	char cedula[15];
@@ -27,7 +27,6 @@ void limpiarPantalla();
 void guardarDatos();
 void registrarVehiculo();
 void calcularValorMatricula();
-void ordenarVehiculos();
 void registrarRevision();
 void generarComprobante();
 void exportarComprobante();
