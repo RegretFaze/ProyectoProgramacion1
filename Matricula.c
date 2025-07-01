@@ -12,33 +12,32 @@ int main() {
 		printf("2. Calcular Matricula\n");
 		printf("3. Generar Comprobante\n");
 		printf("4. Exportar Comprobante a archivo\n");
-		// La opción "5. Ordenar Vehiculos (por placa)" ha sido eliminada
-		printf("5. Guardar y Salir\n"); // Se cambió de 6 a 5
+		printf("5. Guardar y Salir\n");
 		printf("Seleccione una opcion: ");
 		scanf("%d", &opcion);
 		limpiarBuffer();
-		limpiarPantalla(); // Limpiar pantalla al inicio de cada iteración, antes del switch
+		limpiarPantalla(); // Limpiar pantalla al inicio de cada iteraciÃ³n, antes del switch
 		
 		switch (opcion) {
 		case 1: gestionarVehiculos(); limpiarPantalla(); break;
 		case 2: calcularValorMatricula(); break;
 		case 3: generarComprobante(); break;
 		case 4: exportarComprobante(); break;
-		case 5: guardarDatos(); printf("Datos guardados. Saliendo...\n"); break; // Se cambió de 6 a 5
+		case 5: guardarDatos(); printf("Datos guardados. Saliendo...\n"); break;
 		default:
 			printf("Opcion invalida. Intente de nuevo.\n");
 			printf("Presione Enter para continuar...");
 			limpiarBuffer();
-			// limpiarPantalla() ya se hace al inicio del bucle, no es necesario aquí.
+			// limpiarPantalla() ya se hace al inicio del bucle, no es necesario aquÃ­.
 			break;
 		}
 		
-	} while (opcion != 5); // Se cambió de 6 a 5
+	} while (opcion != 5);
 	
 	return 0;
 }
 
-//Implementación Nueva función
+//ImplementaciÃ³n Nueva funciÃ³n
 void gestionarVehiculos() {
 	int subOpcion;
 	do {
@@ -49,11 +48,11 @@ void gestionarVehiculos() {
 		printf("4. Buscar Vehiculo\n");
 		printf("5. Listar Vehiculos\n");
 		printf("6. Registrar Revision Tecnica\n");
-		printf("7. Volver al Menu Principal\n"); //Opción para salir del submenu
+		printf("7. Volver al Menu Principal\n"); //OpciÃ³n para salir del submenu
 		printf("Seleccione una opcion: ");
 		scanf("%d", &subOpcion);
 		limpiarBuffer();
-		limpiarPantalla(); // Limpiar pantalla al inicio de cada iteración del submenu
+		limpiarPantalla(); // Limpiar pantalla al inicio de cada iteraciÃ³n del submenu
 		
 		switch (subOpcion) {
 		case 1: registrarVehiculo(); break;
@@ -67,7 +66,7 @@ void gestionarVehiculos() {
 			printf("Opcion invalida. Intente de nuevo.\n");
 			printf("Presione Enter para continuar...");
 			limpiarBuffer();
-			// limpiarPantalla() ya se hace al inicio del bucle, no es necesario aquí.
+			// limpiarPantalla() ya se hace al inicio del bucle, no es necesario aquÃ­.
 			break;
 		}
 	} while (subOpcion != 7);
